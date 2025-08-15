@@ -375,7 +375,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-blue-50">
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden py-6 px-4 sm:py-20 min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden py-6 px-4 sm:py-12 min-h-[60vh] flex items-center">
         {/* Advanced Geometric Background */}
         <div className="absolute inset-0">
           {/* Primary gradient */}
@@ -391,7 +391,7 @@ export default function Index() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto relative z-10 w-full">
+        <div className="max-w-6xl mx-auto relative z-10 w-full">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content */}
             <div className="text-center lg:text-left fade-in">
