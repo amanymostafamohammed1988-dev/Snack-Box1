@@ -92,7 +92,7 @@ const products = [
   },
   {
     id: 2,
-    name: "Gift a Snack Chip Variety Snack Box ��� Snack Pack Variety Box, 42 Count",
+    name: "Gift a Snack Chip Variety Snack Box – Snack Pack Variety Box, 42 Count",
     shortName: "Gift a Snack Chip Variety Snack Box",
     description:
       "Variety assortment of brands like Airheads, Cheez It, and Famous Amos. Contains 42 individually wrapped treats in high-end packaging with a greeting card.",
@@ -638,7 +638,7 @@ export default function Index() {
                   return (
                     <div
                       key={product.id}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 w-[300px] flex-shrink-0 overflow-hidden group hover:scale-[1.03] active:scale-[0.98] relative"
+                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 w-[300px] flex-shrink-0 overflow-hidden group hover:scale-[1.03] active:scale-[0.98] relative border-2 border-gray-800"
                     >
                       {/* Full Image Fill with White Background */}
                       <div className="relative h-[320px] overflow-hidden bg-white p-4">
@@ -664,16 +664,16 @@ export default function Index() {
                         )}
 
                         {/* Price Strip Overlay at Bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-4 pb-6">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/95 via-white/90 to-transparent p-4 pb-6">
                           <div className="flex items-baseline gap-2 mb-1">
-                            <span className="text-2xl font-black text-white drop-shadow-lg">
+                            <span className="text-2xl font-black text-red-600 drop-shadow-lg">
                               {pricing.salePrice}
                             </span>
-                            <span className="text-lg text-gray-200 line-through">
+                            <span className="text-lg text-gray-500 line-through">
                               {pricing.regularPrice}
                             </span>
                           </div>
-                          <div className="text-sm font-bold text-green-300">
+                          <div className="text-sm font-bold text-green-600">
                             Save $
                             {(
                               parseFloat(
@@ -759,7 +759,7 @@ export default function Index() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:scale-[1.03] cursor-pointer relative"
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:scale-[1.03] cursor-pointer relative border-2 border-gray-800"
                 >
                   {/* Full Image Fill with White Background */}
                   <div className="relative h-[240px] lg:h-[280px] overflow-hidden bg-white p-3 lg:p-4">
@@ -785,16 +785,16 @@ export default function Index() {
                     )}
 
                     {/* Price Strip Overlay at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-3 lg:p-4 pb-4 lg:pb-5">
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/95 via-white/90 to-transparent p-3 lg:p-4 pb-4 lg:pb-5">
                       <div className="flex items-baseline gap-2 mb-1">
-                        <span className="text-xl lg:text-2xl font-black text-white drop-shadow-lg">
+                        <span className="text-xl lg:text-2xl font-black text-red-600 drop-shadow-lg">
                           {pricing.salePrice}
                         </span>
-                        <span className="text-sm lg:text-base text-gray-200 line-through">
+                        <span className="text-sm lg:text-base text-gray-500 line-through">
                           {pricing.regularPrice}
                         </span>
                       </div>
-                      <div className="text-xs lg:text-sm font-bold text-green-300">
+                      <div className="text-xs lg:text-sm font-bold text-green-600">
                         Save $
                         {(
                           parseFloat(pricing.regularPrice.replace("$", "")) -
