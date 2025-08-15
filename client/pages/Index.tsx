@@ -92,7 +92,7 @@ const products = [
   },
   {
     id: 2,
-    name: "Gift a Snack Chip Variety Snack Box – Snack Pack Variety Box, 42 Count",
+    name: "Gift a Snack Chip Variety Snack Box ��� Snack Pack Variety Box, 42 Count",
     shortName: "Gift a Snack Chip Variety Snack Box",
     description:
       "Variety assortment of brands like Airheads, Cheez It, and Famous Amos. Contains 42 individually wrapped treats in high-end packaging with a greeting card.",
@@ -514,7 +514,7 @@ export default function Index() {
       <AutoScrollCarousel />
 
       {/* Enhanced Features & Benefits Section */}
-      <section className="py-12 sm:py-20 px-4 relative overflow-hidden">
+      <section className="py-8 sm:py-12 px-4 relative overflow-hidden">
         {/* Background with subtle pattern */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50 via-white to-gray-50"></div>
         <div className="absolute inset-0 opacity-40">
@@ -533,8 +533,8 @@ export default function Index() {
             </p>
           </div>
 
-          {/* Two Row Layout for Better Space Utilization */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 max-w-5xl mx-auto">
+          {/* Single Row Layout for All Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               const colors = [
@@ -548,7 +548,7 @@ export default function Index() {
               return (
                 <div
                   key={index}
-                  className="group text-center transform transition-all duration-700 hover:scale-105"
+                  className="group text-center transform transition-all duration-700 hover:scale-105 bg-white rounded-2xl p-6 border-2 border-gray-800 shadow-lg hover:shadow-xl"
                   style={{
                     animation: `fadeInUp 0.8s ease-out ${index * 0.2}s both`,
                   }}
