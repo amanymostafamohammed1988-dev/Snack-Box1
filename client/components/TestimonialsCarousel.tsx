@@ -148,7 +148,7 @@ export default function TestimonialsCarousel() {
         </div>
 
         {/* Desktop: Show 3 testimonials with enhanced design */}
-        <div className="hidden md:grid md:grid-cols-3 gap-8 lg:gap-12">
+        <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
           {[0, 1, 2].map((offset) => {
             const testimonialIndex =
               (currentTestimonial + offset) % testimonials.length;
@@ -156,7 +156,7 @@ export default function TestimonialsCarousel() {
             return (
               <div
                 key={testimonialIndex}
-                className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-10 hover:scale-105 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-2xl border border-white/50 group relative overflow-hidden"
+                className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 lg:p-10 hover:scale-105 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-2xl border-2 border-gray-800 group relative overflow-hidden"
                 style={{
                   animation: `fadeInUp 0.8s ease-out ${offset * 0.2}s both`,
                 }}
@@ -209,7 +209,7 @@ export default function TestimonialsCarousel() {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 transition-all duration-500 relative shadow-xl border border-white/50">
+            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 transition-all duration-500 relative shadow-xl border-2 border-gray-800">
               {/* Swipe indicator */}
               <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-logo-green/15 to-green-400/15 text-logo-green px-4 py-2 rounded-full text-sm font-medium">
