@@ -640,8 +640,8 @@ export default function Index() {
                       {/* Full Image Fill with White Background */}
                       <div className="relative h-[320px] overflow-hidden bg-white p-4">
                         <img
-                          src={`${product.image}&quality=95`}
-                          alt={`${product.name} - Premium snack variety box with ${product.size} assorted treats perfect for gifting`}
+                          src={`${product.image}&quality=95&format=webp&width=300`}
+                          alt={`Gift A Snack ${product.size} Premium Snack Box with Chips Crackers Cookies and Candy for Gifts and Care Packages`}
                           className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
                           loading="lazy"
                           width="300"
