@@ -408,8 +408,8 @@ export default function Index() {
               "name": product.name,
               "description": product.description,
               "image": product.image,
-              "url": `https://www.giftasnack.com/${getProductSlug(product.id)}`,
-              "sku": getProductSlug(product.id),
+              "url": `https://www.giftasnack.com/#product-${product.id}`,
+              "sku": `product-${product.id}`,
               "brand": {
                 "@type": "Brand",
                 "name": "Gift A Snack"
@@ -720,7 +720,7 @@ export default function Index() {
                         {/* Popular Badge */}
                         {index === 1 && (
                           <div className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-xl">
-                            🔥 Popular
+                            �� Popular
                           </div>
                         )}
 
