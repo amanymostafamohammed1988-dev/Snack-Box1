@@ -717,6 +717,7 @@ export default function Index() {
                           alt={`Gift A Snack ${product.size} Premium Snack Box with Chips Crackers Cookies and Candy for Gifts and Care Packages`}
                           className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
                           loading="lazy"
+                          decoding="async"
                           width="300"
                           height="320"
                         />
@@ -835,6 +836,7 @@ export default function Index() {
                       alt={`Gift A Snack ${product.size} Premium Snack Box with Chips Crackers Cookies and Candy for Gifts and Care Packages`}
                       className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
                       loading="lazy"
+                      decoding="async"
                       width="320"
                       height="280"
                     />
