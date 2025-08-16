@@ -375,7 +375,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-blue-50">
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden py-6 px-4 sm:py-12 min-h-[60vh] flex items-center">
+      <section className="relative overflow-hidden py-4 px-4 sm:py-8 min-h-[50vh] flex items-center">
         {/* Advanced Geometric Background */}
         <div className="absolute inset-0">
           {/* Primary gradient */}
