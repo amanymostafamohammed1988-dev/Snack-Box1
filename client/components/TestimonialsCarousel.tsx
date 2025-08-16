@@ -258,6 +258,7 @@ export default function TestimonialsCarousel() {
                     alt={`${testimonials[currentTestimonial].name} avatar`}
                     className="w-20 h-20 rounded-full object-cover shadow-2xl border-4 border-white/50"
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-logo-green/20 to-purple-300/20 blur-lg -z-10"></div>
                 </div>
