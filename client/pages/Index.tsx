@@ -1054,8 +1054,8 @@ export default function Index() {
             {/* Logo and Description */}
             <div className="text-center md:text-left">
               <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=300&quality=90"
-                alt="Gift A Snack Logo"
+                src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=240&quality=90"
+                alt="Gift A Snack Premium Snack Box Company Logo - Quality Snack Boxes for Gifts"
                 className="h-20 w-auto mx-auto md:mx-0 mb-3 filter brightness-0 invert"
                 loading="lazy"
               />
