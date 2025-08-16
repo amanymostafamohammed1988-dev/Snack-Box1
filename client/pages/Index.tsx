@@ -611,7 +611,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-heading-red mb-2 sm:mb-3 tracking-tight">
-              Choose Your Perfect Snack Box Size
+              Our Snack Box Collection
             </h2>
             <p className="text-base text-snack-dark-blue/70 max-w-xl mx-auto">
               From small treats to large celebrations, we have the perfect size
