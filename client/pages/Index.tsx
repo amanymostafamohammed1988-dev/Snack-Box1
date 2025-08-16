@@ -656,7 +656,7 @@ export default function Index() {
                         {/* Popular Badge */}
                         {index === 1 && (
                           <div className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-xl">
-                            🔥 Popular
+                            ���� Popular
                           </div>
                         )}
 
@@ -978,7 +978,7 @@ export default function Index() {
       <section className="py-12 px-4 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
         {/* Decorative snack elements */}
         <div className="absolute top-8 left-16 text-2xl opacity-10 animate-pulse">
-          🍪
+          ���
         </div>
         <div className="absolute bottom-8 right-20 text-2xl opacity-10 animate-pulse delay-1000">
           🍫
@@ -1208,8 +1208,8 @@ export default function Index() {
                   <div className="lg:hidden w-full h-[40vh] relative p-4 flex items-center justify-center">
                     <div className="relative w-full max-w-sm mx-auto h-full">
                       <img
-                        src={`${selectedProduct.image}&quality=90`}
-                        alt={`${selectedProduct.name} - Detailed view`}
+                        src={`${selectedProduct.image}&quality=90&format=webp&width=400`}
+                        alt={`Gift A Snack ${selectedProduct.size} Premium Snack Box with Chips Crackers Cookies and Candy - Detailed Product View`}
                         className="w-full h-full object-contain rounded-2xl shadow-lg"
                         loading="lazy"
                         width="400"
@@ -1250,8 +1250,8 @@ export default function Index() {
                   <div className="hidden lg:flex h-full p-8 items-center justify-center relative">
                     <div className="relative w-full h-full max-w-md mx-auto flex items-center justify-center">
                       <img
-                        src={`${selectedProduct.image}&quality=90`}
-                        alt={`${selectedProduct.name} - Detailed view`}
+                        src={`${selectedProduct.image}&quality=90&format=webp&width=400`}
+                        alt={`Gift A Snack ${selectedProduct.size} Premium Snack Box with Chips Crackers Cookies and Candy - Detailed Product View`}
                         className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                         loading="lazy"
                         width="400"
