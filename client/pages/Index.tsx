@@ -385,6 +385,65 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-blue-50">
+      {/* JSON-LD Schema Markup for Organization */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Gift A Snack",
+          "url": "https://www.giftasnack.com",
+          "logo": "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=400",
+          "description": "Premium snack box company offering variety packs perfect for gifts and care packages",
+          "sameAs": ["https://www.tiktok.com/@nut.cravings"],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "areaServed": "US"
+          }
+        })}
+      </script>
+
+      {/* JSON-LD Schema Markup for Product Collection */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "ItemList",
+          "name": "Gift A Snack Premium Snack Box Collection",
+          "description": "Premium snack boxes with variety packs featuring chips, crackers, cookies, and candy",
+          "itemListElement": products.map((product, index) => {
+            const pricing = calculatePricing(product.price);
+            return {
+              "@type": "Product",
+              "position": index + 1,
+              "name": product.name,
+              "description": product.description,
+              "image": product.image,
+              "url": `https://www.giftasnack.com/${getProductSlug(product.id)}`,
+              "sku": getProductSlug(product.id),
+              "brand": {
+                "@type": "Brand",
+                "name": "Gift A Snack"
+              },
+              "offers": {
+                "@type": "Offer",
+                "url": product.walmartLink,
+                "priceCurrency": "USD",
+                "price": pricing.salePrice.replace("$", ""),
+                "availability": "https://schema.org/InStock",
+                "seller": {
+                  "@type": "Organization",
+                  "name": "Walmart"
+                }
+              },
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": product.rating,
+                "reviewCount": product.reviewCount
+              }
+            };
+          })
+        })}
+      </script>
       {/* Enhanced Hero Section */}
       <section className="relative overflow-hidden py-4 px-4 sm:py-8 min-h-[50vh] flex items-center">
         {/* Advanced Geometric Background */}
