@@ -399,8 +399,8 @@ export default function Index() {
               <div className="flex justify-center lg:justify-start mb-4 sm:mb-6">
                 <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-5 rounded-2xl shadow-xl border border-gray-200/50 inline-block">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=400&quality=90"
-                    alt="Gift A Snack - Premium Snack Box Company Logo"
+                    src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=300&quality=90"
+                    alt="Gift A Snack Premium Snack Box Company Logo - Quality Snack Boxes for Gifts"
                     className="h-16 sm:h-20 lg:h-28 w-auto"
                     loading="eager"
                     fetchPriority="high"
@@ -485,8 +485,8 @@ export default function Index() {
                 {/* Main image container with overlap effect */}
                 <div className="relative bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-2xl border border-white/50">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets%2Ffc09862a9f0941d4aeda13a8cb2480bc%2F9a927196010f464595d03440e3666d58?format=webp&width=900&quality=90"
-                    alt="Gift A Snack premium variety snack boxes collection featuring chips, crackers, cookies and candy assortments"
+                    src="https://cdn.builder.io/api/v1/image/assets%2Ffc09862a9f0941d4aeda13a8cb2480bc%2F9a927196010f464595d03440e3666d58?format=webp&width=700&quality=90"
+                    alt="Gift A Snack Premium Snack Box Collection with Chips Crackers Cookies and Candy Variety Packs for Gifts and Care Packages"
                     className="relative z-10 w-full h-auto rounded-2xl transform transition-transform duration-500 hover:scale-105"
                     loading="eager"
                     fetchPriority="high"
