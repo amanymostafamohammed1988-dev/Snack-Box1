@@ -231,7 +231,7 @@ export default function Index() {
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY;
-      const threshold = window.innerHeight * 0.5;
+      const threshold = window.innerHeight * 0.3; // Show earlier - after 30% scroll
       setShowFloatingButton(scrolled > threshold);
     };
 
