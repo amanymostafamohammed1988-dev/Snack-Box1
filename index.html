@@ -78,6 +78,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- DNS Prefetch for external domains -->
+    <link rel="dns-prefetch" href="https://www.walmart.com" />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/client/global.css" as="style" />
+
+    <!-- Resource hints for better performance -->
+    <meta http-equiv="x-dns-prefetch-control" content="on" />
+
     <!-- Favicon and App Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
