@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
-    minify: "terser",
+    minify: "esbuild",
     cssMinify: true,
     sourcemap: false,
     rollupOptions: {
