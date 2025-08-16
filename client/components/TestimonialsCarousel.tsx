@@ -132,7 +132,7 @@ export default function TestimonialsCarousel() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12 sm:mb-20">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-heading-red mb-4 sm:mb-6 tracking-tight">
-            What Our Customers Say
+            Customer Reviews
           </h2>
           <p className="text-lg sm:text-xl text-snack-dark-blue/80 max-w-3xl mx-auto leading-relaxed">
             Don't just take our word for it - hear from our satisfied customers
