@@ -836,16 +836,13 @@ export default function Index() {
                     )}
 
                     {/* View Details Button - Vibrant, full-width */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedProduct(product);
-                      }}
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 lg:py-3 rounded-xl text-xs lg:text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                    <a
+                      href={`/${getProductSlug(product.id)}`}
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 lg:py-3 rounded-xl text-xs lg:text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 no-underline"
                     >
                       <Eye className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
                       View Details
-                    </button>
+                    </a>
                   </div>
                 </div>
               );
