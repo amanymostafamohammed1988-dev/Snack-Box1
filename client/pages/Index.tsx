@@ -40,6 +40,17 @@ const calculatePricing = (salePrice: string) => {
   };
 };
 
+// Helper function to get product slug by ID
+const getProductSlug = (productId: number) => {
+  const slugMap: { [key: number]: string } = {
+    1: "snack-box-35-count",
+    2: "chip-variety-snack-box-42-count",
+    3: "variety-snack-box-52-count",
+    4: "ultimate-snack-box-105-count"
+  };
+  return slugMap[productId] || "snack-box-35-count";
+};
+
 // Star Rating Component
 const StarRating = ({
   rating,
