@@ -450,7 +450,10 @@ export default function Index() {
                   {/* Shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 </button>
-                <button className="border-2 border-logo-green text-logo-green hover:bg-logo-green hover:text-white font-bold px-8 sm:px-10 py-5 sm:py-6 rounded-2xl text-lg sm:text-xl transition-all duration-300 min-h-[64px] sm:min-h-[72px] touch-manipulation tap-highlight-none focus-visible-ring hover:shadow-lg transform hover:scale-105">
+                <button
+                  onClick={() => document.getElementById('why-choose-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="border-2 border-logo-green text-logo-green hover:bg-logo-green hover:text-white font-bold px-8 sm:px-10 py-5 sm:py-6 rounded-2xl text-lg sm:text-xl transition-all duration-300 min-h-[64px] sm:min-h-[72px] touch-manipulation tap-highlight-none focus-visible-ring hover:shadow-lg transform hover:scale-105"
+                >
                   Learn More
                 </button>
               </div>
@@ -511,7 +514,7 @@ export default function Index() {
       <AutoScrollCarousel />
 
       {/* Enhanced Features & Benefits Section */}
-      <section className="py-8 sm:py-12 px-4 relative overflow-hidden">
+      <section id="why-choose-section" className="py-8 sm:py-12 px-4 relative overflow-hidden">
         {/* Background with subtle pattern */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50 via-white to-gray-50"></div>
         <div className="absolute inset-0 opacity-40">
@@ -656,7 +659,7 @@ export default function Index() {
                         {/* Popular Badge */}
                         {index === 1 && (
                           <div className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-xl">
-                            ���� Popular
+                            🔥 Popular
                           </div>
                         )}
 
@@ -944,10 +947,10 @@ export default function Index() {
                 Order Now
               </button>
               <button
-                onClick={openFirstProductModal}
+                onClick={() => document.getElementById('testimonials-section')?.scrollIntoView({ behavior: 'smooth' })}
                 className="border-2 border-logo-green text-logo-green hover:bg-logo-green hover:text-white font-bold px-6 sm:px-8 py-4 sm:py-3 rounded-xl text-base transition-all duration-300 min-h-[56px] sm:min-h-[48px]"
               >
-                View Products
+                Read Reviews
               </button>
             </div>
 
@@ -978,7 +981,7 @@ export default function Index() {
       <section className="py-12 px-4 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
         {/* Decorative snack elements */}
         <div className="absolute top-8 left-16 text-2xl opacity-10 animate-pulse">
-          ���
+          🍪
         </div>
         <div className="absolute bottom-8 right-20 text-2xl opacity-10 animate-pulse delay-1000">
           🍫
