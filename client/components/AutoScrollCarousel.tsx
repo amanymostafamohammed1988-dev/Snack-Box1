@@ -74,6 +74,8 @@ const AutoScrollCarousel = () => {
                     src={image.src}
                     alt={image.alt}
                     className="w-full h-auto object-contain rounded-xl"
+                    loading="lazy"
+                    decoding="async"
                   />
                   {/* Overlay effect on hover */}
                   <div className="absolute inset-0 bg-gradient-to-t from-logo-green/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
