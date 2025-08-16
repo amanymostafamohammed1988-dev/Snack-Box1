@@ -1228,10 +1228,12 @@ export default function Index() {
       {showFloatingButton && (
         <button
           onClick={openFirstProductModal}
-          className="group fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center gap-3 min-h-[68px] sm:min-h-[76px] min-w-[68px] sm:min-w-[160px] animate-bounce-in hover:animate-none"
+          aria-label="Open product quick view to buy now"
+          title="Quick order - View our premium snack boxes"
+          className="group fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center gap-3 min-h-[68px] sm:min-h-[76px] min-w-[68px] sm:min-w-[160px] animate-bounce-in hover:animate-none focus:ring-4 focus:ring-blue-300 focus:outline-none"
           style={{
             filter: "drop-shadow(0 10px 25px rgba(59, 130, 246, 0.4))",
-            animation: "float 3s ease-in-out infinite",
+            animation: "float 3s ease-in-out infinite, pulse-glow 4s ease-in-out infinite",
           }}
         >
           {/* Glowing background effect */}
