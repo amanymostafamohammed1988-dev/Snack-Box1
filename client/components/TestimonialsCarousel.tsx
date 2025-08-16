@@ -109,7 +109,39 @@ export default function TestimonialsCarousel() {
   };
 
   return (
-    <section id="testimonials-section" className="py-16 sm:py-24 px-4 relative overflow-hidden">
+    <>
+      {/* JSON-LD Schema Markup for Reviews */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "name": "Gift A Snack Premium Snack Boxes",
+          "brand": {
+            "@type": "Brand",
+            "name": "Gift A Snack"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "reviewCount": testimonials.length
+          },
+          "review": testimonials.map((testimonial) => ({
+            "@type": "Review",
+            "author": {
+              "@type": "Person",
+              "name": testimonial.name
+            },
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": testimonial.rating,
+              "bestRating": "5"
+            },
+            "reviewBody": testimonial.text
+          }))
+        })
+      }} />
+
+      <section id="testimonials-section" className="py-16 sm:py-24 px-4 relative overflow-hidden">
       {/* Enhanced gradient background with decorative elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50"></div>
       <div className="absolute inset-0 opacity-30">
@@ -295,5 +327,6 @@ export default function TestimonialsCarousel() {
         </div>
       </div>
     </section>
+    </>
   );
 }
