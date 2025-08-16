@@ -23,26 +23,30 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           vendor: ["react", "react-dom"],
           router: ["react-router-dom"],
-          ui: ["@radix-ui/react-accordion", "@radix-ui/react-dialog", "@radix-ui/react-toast"],
+          ui: [
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-toast",
+          ],
           icons: ["lucide-react"],
-          utils: ["@tanstack/react-query", "clsx", "tailwind-merge"]
+          utils: ["@tanstack/react-query", "clsx", "tailwind-merge"],
         },
-        chunkFileNames: 'js/[name]-[hash].js',
-        entryFileNames: 'js/[name]-[hash].js',
+        chunkFileNames: "js/[name]-[hash].js",
+        entryFileNames: "js/[name]-[hash].js",
         assetFileNames: (assetInfo) => {
-          const extType = assetInfo.name?.split('.').pop();
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType ?? '')) {
+          const extType = assetInfo.name?.split(".").pop();
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType ?? "")) {
             return `images/[name]-[hash][extname]`;
           }
-          if (/css/i.test(extType ?? '')) {
+          if (/css/i.test(extType ?? "")) {
             return `css/[name]-[hash][extname]`;
           }
           return `assets/[name]-[hash][extname]`;
-        }
-      }
+        },
+      },
     },
     cssCodeSplit: true,
-    assetsInlineLimit: 4096
+    assetsInlineLimit: 4096,
   },
   plugins: [react(), expressPlugin()],
   resolve: {
