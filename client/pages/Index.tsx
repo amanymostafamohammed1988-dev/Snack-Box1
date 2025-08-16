@@ -1072,27 +1072,31 @@ export default function Index() {
               <div className="flex flex-wrap justify-center gap-4">
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium"
+                  onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
                 >
                   Home
                 </a>
                 <a
                   href="#products-section"
-                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium"
+                  onClick={(e) => { e.preventDefault(); document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
                 >
                   Products
                 </a>
                 <a
-                  href="#"
-                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium"
+                  href="#testimonials-section"
+                  onClick={(e) => { e.preventDefault(); document.getElementById('testimonials-section')?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
                 >
                   Testimonials
                 </a>
                 <a
-                  href="#"
-                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium"
+                  href="#why-choose-section"
+                  onClick={(e) => { e.preventDefault(); document.getElementById('why-choose-section')?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
                 >
-                  Contact Us
+                  Why Choose Us
                 </a>
               </div>
             </div>
