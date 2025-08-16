@@ -109,7 +109,7 @@ export default function TestimonialsCarousel() {
   };
 
   return (
-    <section className="py-16 sm:py-24 px-4 relative overflow-hidden">
+    <section id="testimonials-section" className="py-16 sm:py-24 px-4 relative overflow-hidden">
       {/* Enhanced gradient background with decorative elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50"></div>
       <div className="absolute inset-0 opacity-30">
