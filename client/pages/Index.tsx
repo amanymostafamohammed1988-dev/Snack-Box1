@@ -419,12 +419,9 @@ export default function Index() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-heading-red mb-4 sm:mb-6 leading-tight tracking-tight">
-                <span className="block">Gift A Snack Box</span>
+                <span className="block">Premium Snack Boxes</span>
                 <span className="block text-snack-dark-blue">
-                  Perfect Gift for
-                </span>
-                <span className="block bg-gradient-to-r from-logo-green via-green-500 to-emerald-500 bg-clip-text text-transparent">
-                  Snack Lovers
+                  – Gift A Snack
                 </span>
               </h1>
 
