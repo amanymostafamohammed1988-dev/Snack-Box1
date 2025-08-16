@@ -1224,15 +1224,35 @@ export default function Index() {
         </div>
       </footer>
 
-      {/* Floating Buy Now Button (Desktop & Mobile) */}
+      {/* Enhanced Floating Buy Now Button (Desktop & Mobile) */}
       {showFloatingButton && (
         <button
           onClick={openFirstProductModal}
-          className="fixed bottom-4 right-4 sm:bottom-4 sm:right-4 bg-logo-green hover:bg-green-500 text-white font-bold px-4 sm:px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-xl shadow-xl z-50 transition-all duration-200 transform hover:scale-105 button-enhanced flex items-center gap-2 min-h-[56px] sm:min-h-[44px] min-w-[56px] sm:min-w-[44px]"
+          className="group fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center gap-3 min-h-[68px] sm:min-h-[76px] min-w-[68px] sm:min-w-[160px] animate-bounce-in hover:animate-none"
+          style={{
+            filter: "drop-shadow(0 10px 25px rgba(59, 130, 246, 0.4))",
+            animation: "float 3s ease-in-out infinite",
+          }}
         >
-          <ShoppingCart className="w-5 h-5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline text-sm">Buy Now</span>
-          <span className="sm:hidden text-sm font-semibold">Buy</span>
+          {/* Glowing background effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 blur-lg"></div>
+
+          {/* Button content */}
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="relative">
+              <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-12" />
+              {/* Cart animation dot */}
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 animate-pulse"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="hidden sm:block text-base font-black leading-tight">Buy Now</span>
+              <span className="hidden sm:block text-xs opacity-90 font-medium">Quick Order</span>
+              <span className="sm:hidden text-base font-black">Buy</span>
+            </div>
+          </div>
+
+          {/* Shine effect on hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-2xl"></div>
         </button>
       )}
 
