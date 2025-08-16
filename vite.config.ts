@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
-          const extType = assetInfo.name?.split('.').at(1);
+          const extType = assetInfo.name?.split('.').pop();
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType ?? '')) {
             return `images/[name]-[hash][extname]`;
           }
@@ -39,13 +39,6 @@ export default defineConfig(({ mode }) => ({
           }
           return `assets/[name]-[hash][extname]`;
         }
-      }
-    },
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log']
       }
     },
     cssCodeSplit: true,
