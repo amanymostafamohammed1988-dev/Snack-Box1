@@ -1127,6 +1127,7 @@ export default function Index() {
                 alt="Gift A Snack Premium Snack Box Company Logo - Quality Snack Boxes for Gifts"
                 className="h-20 w-auto mx-auto md:mx-0 mb-3 filter brightness-0 invert"
                 loading="lazy"
+                decoding="async"
               />
               <p className="text-gray-300 text-sm">
                 Premium snack boxes perfect for gifts and special occasions.
