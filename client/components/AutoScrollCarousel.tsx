@@ -47,7 +47,7 @@ const AutoScrollCarousel = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-heading-red mb-4 tracking-tight">
-            Our Care Package Collection
+            Our Snack Box Variety Collection
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Discover the perfect snack experience for every occasion and
