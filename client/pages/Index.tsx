@@ -1239,12 +1239,18 @@ export default function Index() {
           {/* Glowing background effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 blur-lg"></div>
 
+          {/* Notification badge */}
+          <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg animate-pulse">
+            !
+          </div>
+
           {/* Button content */}
           <div className="relative z-10 flex items-center gap-3">
             <div className="relative">
-              <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-12" />
-              {/* Cart animation dot */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 animate-pulse"></div>
+              <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
+              {/* Cart animation sparkle */}
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 animate-ping"></div>
+              <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
             </div>
             <div className="flex flex-col">
               <span className="hidden sm:block text-base font-black leading-tight">Buy Now</span>
