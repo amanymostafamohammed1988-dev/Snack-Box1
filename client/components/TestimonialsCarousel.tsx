@@ -205,6 +205,7 @@ export default function TestimonialsCarousel() {
                         alt={`${testimonial.name} avatar`}
                         className="w-24 h-24 rounded-full object-cover shadow-2xl border-4 border-white/50 group-hover:border-logo-green/30 transition-all duration-500"
                         loading="lazy"
+                        decoding="async"
                       />
                       {/* Glow effect around image */}
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-logo-green/20 to-purple-300/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
