@@ -1352,26 +1352,25 @@ export default function Index() {
               <div className="flex flex-col lg:grid lg:grid-cols-5 h-full">
                 {/* Image Section - 40% on Desktop, Full Width on Mobile */}
                 <div className="lg:col-span-2 relative bg-gradient-to-br from-gray-50 to-gray-100 lg:bg-gray-50">
-                  {/* Mobile: Full Width Image at Top */}
-                  <div className="lg:hidden w-full h-[40vh] relative p-4 flex items-center justify-center">
-                    <div className="relative w-full max-w-sm mx-auto h-full">
+                  {/* Mobile: Properly Sized Image with Margins */}
+                  <div className="lg:hidden w-full relative p-4 sm:p-6 flex items-center justify-center bg-gray-50">
+                    <div className="relative w-full max-w-[280px] sm:max-w-[320px] mx-auto aspect-square">
                       <img
                         src={`${selectedProduct.image}&quality=90&format=webp&width=400`}
                         alt={`Gift A Snack ${selectedProduct.size} Premium Snack Box with Chips Crackers Cookies and Candy - Detailed Product View`}
-                        className="w-full h-full object-contain rounded-2xl shadow-lg"
+                        className="w-full h-full object-contain rounded-2xl shadow-lg bg-white p-2"
                         loading="lazy"
                         width="400"
                         height="400"
                         style={{
                           animation:
                             "imageZoomIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both",
-                          filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.15))",
+                          filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.1))",
                         }}
                       />
                       {/* Mobile Discount Badge */}
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white px-3 py-1.5 rounded-xl text-sm font-black shadow-lg">
-                        -
-                        {(
+                      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-xl text-sm font-black shadow-lg">
+                        -{(
                           ((parseFloat(
                             calculatePricing(
                               selectedProduct.price,
@@ -1388,8 +1387,7 @@ export default function Index() {
                               ).regularPrice.replace("$", ""),
                             )) *
                           100
-                        ).toFixed(0)}
-                        %
+                        ).toFixed(0)}%
                       </div>
                     </div>
                   </div>
