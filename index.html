@@ -110,8 +110,22 @@
       }
     </script>
 
-    <!-- TikTok Embed Script with defer for performance -->
-    <script defer src="https://www.tiktok.com/embed.js"></script>
+    <!-- TikTok Embed Script - Optional, loaded asynchronously for performance -->
+    <script>
+      // Load TikTok script only if needed and handle errors gracefully
+      (function() {
+        if (navigator.onLine) {
+          const script = document.createElement('script');
+          script.src = 'https://www.tiktok.com/embed.js';
+          script.async = true;
+          script.defer = true;
+          script.onerror = function() {
+            console.warn('TikTok embed script failed to load');
+          };
+          document.head.appendChild(script);
+        }
+      })();
+    </script>
   </head>
 
   <body>
