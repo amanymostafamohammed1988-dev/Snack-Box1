@@ -931,6 +931,11 @@ export default function Index() {
       {/* Testimonials Section */}
       <TestimonialsCarousel />
       {/* TikTok Videos Section */}
+      <ErrorBoundary fallback={
+        <div className="py-12 text-center bg-gray-100">
+          <p className="text-gray-600">Social media content temporarily unavailable</p>
+        </div>
+      }>
       <section
         className="tiktok-section py-6 sm:py-12 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden"
         style={{
@@ -996,6 +1001,7 @@ export default function Index() {
           </div>
         </div>
       </section>
+      </ErrorBoundary>
 
       {/* Final Call-to-Action Section */}
       <section className="py-6 sm:py-12 px-4 bg-gradient-to-br from-blue-100 via-blue-50 to-white relative overflow-hidden">
