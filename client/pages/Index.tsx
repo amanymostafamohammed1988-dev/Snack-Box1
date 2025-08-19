@@ -343,7 +343,7 @@ export default function Index() {
     };
   }, []);
 
-  // Reinitialize TikTok embeds when the section becomes visible
+  // Enhanced TikTok section visibility handling with error protection
   useEffect(() => {
     const tiktokSection = document.querySelector(".tiktok-section");
     if (!tiktokSection) return;
@@ -352,13 +352,15 @@ export default function Index() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Wait a bit, then try to reinitialize
+            // Wait a bit, then try to reinitialize with error handling
             setTimeout(() => {
-              if ((window as any).tiktokEmbed?.lib?.render) {
-                console.log(
-                  "Reinitializing TikTok embeds on section visibility",
-                );
-                (window as any).tiktokEmbed.lib.render();
+              try {
+                const tiktokEmbed = (window as any).tiktokEmbed;
+                if (tiktokEmbed && tiktokEmbed.lib && typeof tiktokEmbed.lib.render === 'function') {
+                  tiktokEmbed.lib.render();
+                }
+              } catch (error) {
+                console.warn("TikTok reinitialize failed:", error);
               }
             }, 500);
           }
