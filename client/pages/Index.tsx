@@ -1593,22 +1593,22 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* Sticky Buy Button - Inside Details Column (Desktop) / Fixed at Bottom (Mobile) */}
-                  <div className="lg:sticky lg:bottom-0 fixed bottom-0 left-0 right-0 lg:relative bg-white border-t border-gray-200 p-4 lg:p-6 shadow-lg lg:shadow-none lg:border-t lg:rounded-b-3xl z-40">
+                  {/* Mobile-Optimized Sticky Buy Button */}
+                  <div className="lg:sticky lg:bottom-0 sticky bottom-0 sm:relative bg-white border-t border-gray-200 p-3 sm:p-4 lg:p-6 shadow-lg lg:shadow-none lg:border-t lg:rounded-b-3xl z-40 rounded-b-2xl sm:rounded-b-3xl">
                     <a
                       href={selectedProduct.walmartLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 lg:py-5 text-center rounded-2xl text-lg lg:text-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+                      className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 lg:py-5 text-center rounded-xl sm:rounded-2xl text-base sm:text-lg lg:text-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 sm:gap-3"
                     >
-                      <ShoppingCart className="w-6 h-6" />
+                      <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
                       <div className="flex flex-col">
-                        <span className="font-black">BUY NOW ON</span>
-                        <span className="font-black text-yellow-300">
+                        <span className="font-black text-sm sm:text-base">BUY NOW ON</span>
+                        <span className="font-black text-yellow-300 text-sm sm:text-base">
                           WALMART
                         </span>
                       </div>
-                      <div className="bg-yellow-400 text-blue-800 px-3 py-1.5 rounded-full text-base font-black">
+                      <div className="bg-yellow-400 text-blue-800 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-sm sm:text-base font-black">
                         {calculatePricing(selectedProduct.price).salePrice}
                       </div>
                     </a>
