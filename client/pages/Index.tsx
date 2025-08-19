@@ -1613,22 +1613,22 @@ export default function Index() {
                       </div>
                     </a>
 
-                    {/* Trust indicators */}
-                    <div className="flex items-center justify-center gap-4 lg:gap-6 mt-3 text-xs lg:text-sm text-gray-600">
+                    {/* Mobile-Optimized Trust indicators */}
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 lg:gap-6 mt-2 sm:mt-3 text-xs sm:text-sm lg:text-sm text-gray-600">
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         <span className="hidden sm:inline">Fast Shipping</span>
-                        <span className="sm:hidden">Shipping</span>
+                        <span className="sm:hidden text-xs">Shipping</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         <span className="hidden sm:inline">Secure Payment</span>
-                        <span className="sm:hidden">Secure</span>
+                        <span className="sm:hidden text-xs">Secure</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         <span className="hidden sm:inline">Easy Returns</span>
-                        <span className="sm:hidden">Returns</span>
+                        <span className="sm:hidden text-xs">Returns</span>
                       </div>
                     </div>
                   </div>
