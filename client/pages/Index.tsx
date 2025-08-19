@@ -464,7 +464,6 @@ export default function Index() {
                     alt="Gift A Snack Premium Snack Box Company Logo - Quality Snack Boxes for Gifts"
                     className="h-16 sm:h-20 lg:h-28 w-auto"
                     loading="eager"
-                    fetchPriority="high"
                     width="200"
                     height="112"
                   />
@@ -557,7 +556,6 @@ export default function Index() {
                     alt="Gift A Snack Premium Snack Box Collection with Chips Crackers Cookies and Candy Variety Packs for Gifts and Care Packages"
                     className="relative z-10 w-full h-auto rounded-2xl transform transition-transform duration-500 hover:scale-105"
                     loading="eager"
-                    fetchPriority="high"
                     width="700"
                     height="500"
                     style={{
