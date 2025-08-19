@@ -252,7 +252,6 @@ export default function ProductPage() {
                 alt={`Gift A Snack ${product.size} Premium Snack Box with Chips Crackers Cookies and Candy for Gifts and Care Packages`}
                 className="w-full h-auto object-contain rounded-xl"
                 loading="eager"
-                fetchPriority="high"
               />
 
               {/* Discount Badge */}
