@@ -1337,16 +1337,19 @@ export default function Index() {
               onTouchEnd={handleTouchEnd}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
+              {/* Mobile-Optimized Close Button */}
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="absolute top-4 right-4 z-30 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 group"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 w-10 h-10 sm:w-12 sm:h-12 bg-white/95 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 group border border-gray-200"
               >
-                <X className="w-5 h-5 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
               </button>
 
-              {/* Mobile swipe indicator */}
-              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-2 mb-4 lg:hidden"></div>
+              {/* Enhanced Mobile swipe indicator */}
+              <div className="flex flex-col items-center pt-2 pb-3 lg:hidden">
+                <div className="w-12 h-1 bg-gray-400 rounded-full mb-1"></div>
+                <span className="text-xs text-gray-500 font-medium">Swipe down to close</span>
+              </div>
 
               {/* Desktop Layout: 40% Image | 60% Details */}
               <div className="flex flex-col lg:grid lg:grid-cols-5 h-full">
