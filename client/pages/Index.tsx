@@ -1325,9 +1325,9 @@ export default function Index() {
           ></div>
 
           {/* Modal Container */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:p-8">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
             <div
-              className="bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-6xl lg:max-h-[90vh] shadow-2xl lg:rounded-3xl relative overflow-hidden"
+              className="bg-white w-full h-full sm:w-[90%] sm:h-[85%] sm:max-w-md sm:max-h-[90vh] lg:w-auto lg:h-auto lg:max-w-6xl lg:max-h-[90vh] shadow-2xl rounded-2xl sm:rounded-3xl lg:rounded-3xl relative overflow-hidden"
               style={{
                 animation: "modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 maxHeight: "calc(100vh - 40px)",
