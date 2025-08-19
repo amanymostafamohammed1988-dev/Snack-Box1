@@ -1439,31 +1439,31 @@ export default function Index() {
 
                 {/* Details Section - 60% on Desktop */}
                 <div className="lg:col-span-3 flex flex-col h-full relative">
-                  {/* Scrollable Content Area */}
+                  {/* Mobile-Optimized Scrollable Content Area */}
                   <div
-                    className="flex-1 overflow-y-auto p-4 lg:p-8 pb-28 lg:pb-32"
+                    className="flex-1 overflow-y-auto px-4 py-3 sm:px-6 sm:py-4 lg:p-8 pb-24 sm:pb-28 lg:pb-32"
                     style={{
-                      maxHeight: "calc(100vh - 40px)",
+                      maxHeight: "calc(100vh - 200px)",
                     }}
                   >
-                    {/* Title + Rating */}
-                    <div className="mb-6">
-                      <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 leading-tight mb-4">
+                    {/* Mobile-Optimized Title + Rating */}
+                    <div className="mb-4 sm:mb-6">
+                      <h2 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 leading-tight mb-3 sm:mb-4">
                         {selectedProduct.shortName || selectedProduct.name}
                       </h2>
 
-                      {/* Rating with gold stars */}
+                      {/* Mobile-Optimized Rating with gold stars */}
                       {selectedProduct.rating && (
-                        <div className="flex items-center gap-2 mb-4">
+                        <div className="flex items-center gap-2 mb-3 sm:mb-4">
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-5 h-5 ${i < selectedProduct.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                                className={`w-4 h-4 sm:w-5 sm:h-5 ${i < selectedProduct.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
                               />
                             ))}
                           </div>
-                          <span className="text-sm text-gray-600 font-medium">
+                          <span className="text-sm sm:text-base text-gray-600 font-medium">
                             ({selectedProduct.reviewCount} reviews)
                           </span>
                         </div>
