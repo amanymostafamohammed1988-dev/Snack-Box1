@@ -24,6 +24,7 @@ import {
 } from "../components/ui/accordion";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import AutoScrollCarousel from "../components/AutoScrollCarousel";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 // Helper function to calculate pricing
 const calculatePricing = (salePrice: string) => {
