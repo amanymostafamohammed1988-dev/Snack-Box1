@@ -1470,18 +1470,18 @@ export default function Index() {
                       )}
                     </div>
 
-                    {/* Price Section */}
-                    <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-100">
-                      <div className="flex items-baseline gap-3 mb-3">
-                        <span className="text-4xl lg:text-5xl font-black text-red-500">
+                    {/* Mobile-Optimized Price Section */}
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-100">
+                      <div className="flex items-baseline gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-red-600">
                           {calculatePricing(selectedProduct.price).salePrice}
                         </span>
-                        <span className="text-2xl lg:text-3xl text-gray-400 line-through">
+                        <span className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-500 line-through">
                           {calculatePricing(selectedProduct.price).regularPrice}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="bg-green-100 text-green-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-bold inline-block w-fit">
                           Save $
                           {(
                             parseFloat(
@@ -1497,10 +1497,10 @@ export default function Index() {
                           ).toFixed(2)}
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">🍪</span>
-                          <span className="text-lg">🍫</span>
-                          <span className="text-lg">🥨</span>
-                          <span className="text-sm text-gray-500 ml-2 font-medium">
+                          <span className="text-base sm:text-lg">🍪</span>
+                          <span className="text-base sm:text-lg">🍫</span>
+                          <span className="text-base sm:text-lg">🥨</span>
+                          <span className="text-sm sm:text-base text-gray-600 ml-2 font-medium">
                             {selectedProduct.size}
                           </span>
                         </div>
