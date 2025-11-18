@@ -4,28 +4,28 @@ const AutoScrollCarousel = () => {
   const bannerImages = [
     {
       id: 1,
-      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F2c3b085707884c2f88ed094decfffa88?format=webp&width=800",
-      alt: "Gift A Snack Care Packages Banner 1",
+      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F2c3b085707884c2f88ed094decfffa88?format=webp&width=600&quality=90",
+      alt: "Gift A Snack Premium Snack Box Collection Featuring Chips Crackers Cookies and Candy Variety Packs",
     },
     {
       id: 2,
-      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Ffb86c1a2698e4415a1b414f0ae8c1f33?format=webp&width=800",
-      alt: "Gift A Snack Care Packages Banner 2",
+      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Ffb86c1a2698e4415a1b414f0ae8c1f33?format=webp&width=600&quality=90",
+      alt: "Gift A Snack Variety Pack Assortment Perfect for Gifts and Care Packages with Quality Snacks",
     },
     {
       id: 3,
-      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F0fc267a65d674083b4be3bd27a90b563?format=webp&width=800",
-      alt: "Gift A Snack Care Packages Banner 3",
+      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F0fc267a65d674083b4be3bd27a90b563?format=webp&width=600&quality=90",
+      alt: "Gift A Snack Premium Care Package Collection with Diverse Snack Options for Every Occasion",
     },
     {
       id: 4,
-      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F5277a0906b534f7d80d910806e3426de?format=webp&width=800",
-      alt: "Gift A Snack Care Packages Banner 4",
+      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F5277a0906b534f7d80d910806e3426de?format=webp&width=600&quality=90",
+      alt: "Gift A Snack Quality Snack Box Collection with Chips Crackers and Sweet Treats for Gifting",
     },
     {
       id: 5,
-      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F97422d3d39ee42519a91e3fbb0835571?format=webp&width=800",
-      alt: "Gift A Snack Care Packages Banner 5",
+      src: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F97422d3d39ee42519a91e3fbb0835571?format=webp&width=600&quality=90",
+      alt: "Gift A Snack Premium Variety Pack with Assorted Snacks Perfect for Office Treats and Gifts",
     },
   ];
 
@@ -47,7 +47,7 @@ const AutoScrollCarousel = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-heading-red mb-4 tracking-tight">
-            Our Care Package Collection
+            Our Snack Box Variety Collection
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Discover the perfect snack experience for every occasion and
@@ -74,6 +74,8 @@ const AutoScrollCarousel = () => {
                     src={image.src}
                     alt={image.alt}
                     className="w-full h-auto object-contain rounded-xl"
+                    loading="lazy"
+                    decoding="async"
                   />
                   {/* Overlay effect on hover */}
                   <div className="absolute inset-0 bg-gradient-to-t from-logo-green/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>

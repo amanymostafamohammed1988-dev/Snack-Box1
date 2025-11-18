@@ -6,16 +6,15 @@
 
     <!-- Primary Meta Tags -->
     <title>
-      Gift A Snack Box - Premium Variety Snack Boxes | 35-105 Count | Order on
-      Walmart
+      Premium Snack Boxes – Gift A Snack | Variety Packs 35-105 Count | Walmart
     </title>
     <meta
       name="title"
-      content="Gift A Snack Box - Premium Variety Snack Boxes | 35-105 Count | Order on Walmart"
+      content="Premium Snack Boxes – Gift A Snack | Variety Packs 35-105 Count | Walmart"
     />
     <meta
       name="description"
-      content="Premium assorted snack boxes with 35-105 count variety packs. Perfect for gifts, care packages, office treats. Features chips, crackers, cookies, candy & granola bars. Available on Walmart with fast shipping."
+      content="Premium snack boxes with 35-105 count variety packs featuring chips, crackers, cookies, and candy. Perfect for gifts, care packages, and office treats. Order Gift A Snack boxes on Walmart with fast shipping and quality guarantee."
     />
     <meta
       name="keywords"
@@ -23,6 +22,7 @@
     />
     <meta name="author" content="Gift A Snack" />
     <meta name="robots" content="index, follow" />
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), gyroscope=(), magnetometer=(), camera=(), microphone=(), geolocation=()" />
     <link rel="canonical" href="https://www.giftasnack.com" />
 
     <!-- Open Graph / Facebook -->
@@ -79,6 +79,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- DNS Prefetch for external domains -->
+    <link rel="dns-prefetch" href="https://www.walmart.com" />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+
+    <!-- Resource hints for better performance -->
+    <meta http-equiv="x-dns-prefetch-control" content="on" />
+
     <!-- Favicon and App Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -103,8 +110,8 @@
       }
     </script>
 
-    <!-- TikTok Embed Script with defer for performance -->
-    <script defer src="https://www.tiktok.com/embed.js"></script>
+    <!-- TikTok script will be loaded by React components when needed -->
+    <!-- This prevents premature loading and reduces console errors -->
   </head>
 
   <body>

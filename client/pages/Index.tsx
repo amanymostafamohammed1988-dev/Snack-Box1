@@ -24,6 +24,7 @@ import {
 } from "../components/ui/accordion";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import AutoScrollCarousel from "../components/AutoScrollCarousel";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 // Helper function to calculate pricing
 const calculatePricing = (salePrice: string) => {
@@ -230,7 +231,7 @@ export default function Index() {
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY;
-      const threshold = window.innerHeight * 0.5;
+      const threshold = window.innerHeight * 0.3; // Show earlier - after 30% scroll
       setShowFloatingButton(scrolled > threshold);
     };
 
@@ -252,10 +253,11 @@ export default function Index() {
     };
   }, [selectedProduct]);
 
-  // Robust TikTok embed initialization
+  // Enhanced TikTok embed initialization with better error handling
   useEffect(() => {
     let retryCount = 0;
-    const maxRetries = 10;
+    const maxRetries = 2; // Reduced retries to avoid excessive requests
+    let initializationTimers: NodeJS.Timeout[] = [];
 
     const loadTikTokScript = () => {
       return new Promise<void>((resolve, reject) => {
@@ -264,86 +266,124 @@ export default function Index() {
           'script[src*="tiktok.com/embed.js"]',
         );
         if (existingScript) {
-          existingScript.remove();
+          resolve();
+          return;
         }
 
-        // Create new script with cache-busting
+        // Create new script without cache-busting to avoid repeated failures
         const script = document.createElement("script");
-        script.src = `https://www.tiktok.com/embed.js?v=${Date.now()}`;
+        script.src = "https://www.tiktok.com/embed.js";
         script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () =>
-          reject(new Error("Failed to load TikTok script"));
+        script.defer = true;
 
-        // Append to body instead of head
-        document.body.appendChild(script);
+        // Set up timeout to prevent hanging
+        const timeoutId = setTimeout(() => {
+          console.warn("TikTok script loading timed out");
+          reject(new Error("TikTok script timeout"));
+        }, 10000); // 10 second timeout
+
+        script.onload = () => {
+          clearTimeout(timeoutId);
+          resolve();
+        };
+
+        script.onerror = () => {
+          clearTimeout(timeoutId);
+          console.warn("TikTok embed script failed to load - continuing without embeds");
+          reject(new Error("Failed to load TikTok script"));
+        };
+
+        // Append to head for better compatibility
+        document.head.appendChild(script);
       });
+    };
+
+    const safeRenderTikTok = () => {
+      try {
+        // Enhanced safety checks with proper error handling
+        const windowObj = window as any;
+
+        // Check if TikTok embed object exists with all required properties
+        if (!windowObj.tiktokEmbed) {
+          return false;
+        }
+
+        const { tiktokEmbed } = windowObj;
+
+        // Verify lib object exists
+        if (!tiktokEmbed.lib || typeof tiktokEmbed.lib !== 'object') {
+          return false;
+        }
+
+        // Verify render function exists and is callable
+        if (typeof tiktokEmbed.lib.render !== 'function') {
+          return false;
+        }
+
+        // Check if there are any embeds to render to prevent errors
+        const embedContainers = document.querySelectorAll('.tiktok-embed-container');
+        if (embedContainers.length === 0) {
+          return false;
+        }
+
+        // Attempt to render with try-catch to prevent uncaught errors
+        tiktokEmbed.lib.render();
+        return true;
+
+      } catch (error) {
+        console.warn("TikTok render attempt failed safely:", error);
+        return false;
+      }
     };
 
     const initializeTikTokEmbeds = async () => {
       try {
-        // Wait for script to load
+        // Wait for script to load with timeout
         await loadTikTokScript();
 
-        // Wait a bit for the script to initialize
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Try to render embeds with retry logic
-        const attemptRender = () => {
-          if ((window as any).tiktokEmbed?.lib?.render) {
-            console.log("TikTok embeds initialized successfully");
-            (window as any).tiktokEmbed.lib.render();
-            return true;
+        // Wait for TikTok embed library to initialize
+        const timer1 = setTimeout(() => {
+          if (safeRenderTikTok()) {
+            console.log("TikTok embeds rendered successfully");
+            return;
           }
-          return false;
-        };
 
-        // Retry logic
-        const retry = () => {
+          // Retry once after additional delay
           if (retryCount < maxRetries) {
             retryCount++;
-            console.log(
-              `Retrying TikTok embed initialization (${retryCount}/${maxRetries})`,
-            );
-
-            if (!attemptRender()) {
-              setTimeout(retry, 1000);
-            }
-          } else {
-            console.error(
-              "Failed to initialize TikTok embeds after maximum retries",
-            );
+            const timer2 = setTimeout(() => {
+              if (safeRenderTikTok()) {
+                console.log("TikTok embeds rendered on retry");
+              } else {
+                console.warn("TikTok embeds failed to initialize - videos may not display");
+              }
+            }, 3000);
+            initializationTimers.push(timer2);
           }
-        };
+        }, 2000);
 
-        if (!attemptRender()) {
-          retry();
-        }
+        initializationTimers.push(timer1);
+
       } catch (error) {
-        console.error("Error loading TikTok script:", error);
-        // Retry the entire process
-        if (retryCount < maxRetries) {
-          setTimeout(initializeTikTokEmbeds, 2000);
-        }
+        console.warn("TikTok embeds unavailable:", error?.message || error);
+        // Gracefully continue without TikTok embeds
       }
     };
 
     // Start initialization after component mounts
-    const timer = setTimeout(initializeTikTokEmbeds, 100);
+    const mainTimer = setTimeout(initializeTikTokEmbeds, 1000);
+    initializationTimers.push(mainTimer);
 
     return () => {
-      clearTimeout(timer);
-      // Clean up script on unmount
-      const script = document.querySelector(
-        'script[src*="tiktok.com/embed.js"]',
-      );
-      if (script) {
-        script.remove();
-      }
+      // Clear all timers to prevent memory leaks
+      initializationTimers.forEach(timer => clearTimeout(timer));
+
+      // Don't remove script on unmount to avoid repeated loading attempts
+      // The script will persist for the session
     };
   }, []);
 
-  // Reinitialize TikTok embeds when the section becomes visible
+  // Enhanced TikTok section visibility handling with error protection
   useEffect(() => {
     const tiktokSection = document.querySelector(".tiktok-section");
     if (!tiktokSection) return;
@@ -352,15 +392,37 @@ export default function Index() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Wait a bit, then try to reinitialize
-            setTimeout(() => {
-              if ((window as any).tiktokEmbed?.lib?.render) {
-                console.log(
-                  "Reinitializing TikTok embeds on section visibility",
-                );
-                (window as any).tiktokEmbed.lib.render();
+            // Wait a bit, then try to reinitialize with comprehensive error handling
+            const reinitializeTimer = setTimeout(() => {
+              try {
+                const windowObj = window as any;
+
+                // Comprehensive safety checks
+                if (!windowObj.tiktokEmbed ||
+                    !windowObj.tiktokEmbed.lib ||
+                    typeof windowObj.tiktokEmbed.lib.render !== 'function') {
+                  console.log("TikTok embed not ready for reinitialization");
+                  return;
+                }
+
+                // Check if there are embed containers to render
+                const embedContainers = document.querySelectorAll('.tiktok-embed-container');
+                if (embedContainers.length === 0) {
+                  return;
+                }
+
+                // Safe render attempt
+                windowObj.tiktokEmbed.lib.render();
+                console.log("TikTok embeds reinitialized on scroll");
+
+              } catch (error) {
+                console.warn("TikTok reinitialize failed safely:", error?.message || error);
+                // Continue gracefully without throwing
               }
             }, 500);
+
+            // Store timer reference for cleanup
+            entry.target.setAttribute('data-reinit-timer', reinitializeTimer.toString());
           }
         });
       },
@@ -369,13 +431,81 @@ export default function Index() {
 
     observer.observe(tiktokSection);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      // Clear any pending reinitialize timers
+      const timerAttr = tiktokSection.getAttribute('data-reinit-timer');
+      if (timerAttr) {
+        clearTimeout(parseInt(timerAttr));
+      }
+    };
   }, []);
 
   return (
     <div className="min-h-screen bg-blue-50">
+      {/* JSON-LD Schema Markup for Organization */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Gift A Snack",
+          url: "https://www.giftasnack.com",
+          logo: "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=400",
+          description:
+            "Premium snack box company offering variety packs perfect for gifts and care packages",
+          sameAs: ["https://www.tiktok.com/@nut.cravings"],
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "customer service",
+            areaServed: "US",
+          },
+        })}
+      </script>
+
+      {/* JSON-LD Schema Markup for Product Collection */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "ItemList",
+          name: "Gift A Snack Premium Snack Box Collection",
+          description:
+            "Premium snack boxes with variety packs featuring chips, crackers, cookies, and candy",
+          itemListElement: products.map((product, index) => {
+            const pricing = calculatePricing(product.price);
+            return {
+              "@type": "Product",
+              position: index + 1,
+              name: product.name,
+              description: product.description,
+              image: product.image,
+              url: `https://www.giftasnack.com/#product-${product.id}`,
+              sku: `product-${product.id}`,
+              brand: {
+                "@type": "Brand",
+                name: "Gift A Snack",
+              },
+              offers: {
+                "@type": "Offer",
+                url: product.walmartLink,
+                priceCurrency: "USD",
+                price: pricing.salePrice.replace("$", ""),
+                availability: "https://schema.org/InStock",
+                seller: {
+                  "@type": "Organization",
+                  name: "Walmart",
+                },
+              },
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: product.rating,
+                reviewCount: product.reviewCount,
+              },
+            };
+          }),
+        })}
+      </script>
       {/* Enhanced Hero Section */}
-      <section className="relative overflow-hidden py-6 px-4 sm:py-20 min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden py-4 px-4 sm:py-8 min-h-[50vh] flex items-center">
         {/* Advanced Geometric Background */}
         <div className="absolute inset-0">
           {/* Primary gradient */}
@@ -391,7 +521,7 @@ export default function Index() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto relative z-10 w-full">
+        <div className="max-w-6xl mx-auto relative z-10 w-full">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content */}
             <div className="text-center lg:text-left fade-in">
@@ -399,11 +529,10 @@ export default function Index() {
               <div className="flex justify-center lg:justify-start mb-4 sm:mb-6">
                 <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-5 rounded-2xl shadow-xl border border-gray-200/50 inline-block">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=400&quality=90"
-                    alt="Gift A Snack - Premium Snack Box Company Logo"
+                    src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=300&quality=90"
+                    alt="Gift A Snack Premium Snack Box Company Logo - Quality Snack Boxes for Gifts"
                     className="h-16 sm:h-20 lg:h-28 w-auto"
                     loading="eager"
-                    fetchPriority="high"
                     width="200"
                     height="112"
                   />
@@ -419,12 +548,9 @@ export default function Index() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-heading-red mb-4 sm:mb-6 leading-tight tracking-tight">
-                <span className="block">Gift A Snack Box</span>
+                <span className="block">Premium Snack Boxes</span>
                 <span className="block text-snack-dark-blue">
-                  Perfect Gift for
-                </span>
-                <span className="block bg-gradient-to-r from-logo-green via-green-500 to-emerald-500 bg-clip-text text-transparent">
-                  Snack Lovers
+                  – Gift A Snack
                 </span>
               </h1>
 
@@ -453,7 +579,14 @@ export default function Index() {
                   {/* Shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 </button>
-                <button className="border-2 border-logo-green text-logo-green hover:bg-logo-green hover:text-white font-bold px-8 sm:px-10 py-5 sm:py-6 rounded-2xl text-lg sm:text-xl transition-all duration-300 min-h-[64px] sm:min-h-[72px] touch-manipulation tap-highlight-none focus-visible-ring hover:shadow-lg transform hover:scale-105">
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("why-choose-section")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="border-2 border-logo-green text-logo-green hover:bg-logo-green hover:text-white font-bold px-8 sm:px-10 py-5 sm:py-6 rounded-2xl text-lg sm:text-xl transition-all duration-300 min-h-[64px] sm:min-h-[72px] touch-manipulation tap-highlight-none focus-visible-ring hover:shadow-lg transform hover:scale-105"
+                >
                   Learn More
                 </button>
               </div>
@@ -488,11 +621,10 @@ export default function Index() {
                 {/* Main image container with overlap effect */}
                 <div className="relative bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-2xl border border-white/50">
                   <img
-                    src="https://cdn.builder.io/api/v1/image/assets%2Ffc09862a9f0941d4aeda13a8cb2480bc%2F9a927196010f464595d03440e3666d58?format=webp&width=900&quality=90"
-                    alt="Gift A Snack premium variety snack boxes collection featuring chips, crackers, cookies and candy assortments"
+                    src="https://cdn.builder.io/api/v1/image/assets%2Ffc09862a9f0941d4aeda13a8cb2480bc%2F9a927196010f464595d03440e3666d58?format=webp&width=700&quality=90"
+                    alt="Gift A Snack Premium Snack Box Collection with Chips Crackers Cookies and Candy Variety Packs for Gifts and Care Packages"
                     className="relative z-10 w-full h-auto rounded-2xl transform transition-transform duration-500 hover:scale-105"
                     loading="eager"
-                    fetchPriority="high"
                     width="700"
                     height="500"
                     style={{
@@ -514,7 +646,10 @@ export default function Index() {
       <AutoScrollCarousel />
 
       {/* Enhanced Features & Benefits Section */}
-      <section className="py-12 sm:py-20 px-4 relative overflow-hidden">
+      <section
+        id="why-choose-section"
+        className="py-8 sm:py-12 px-4 relative overflow-hidden"
+      >
         {/* Background with subtle pattern */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50 via-white to-gray-50"></div>
         <div className="absolute inset-0 opacity-40">
@@ -533,8 +668,8 @@ export default function Index() {
             </p>
           </div>
 
-          {/* Two Row Layout for Better Space Utilization */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 max-w-5xl mx-auto">
+          {/* Single Row Layout for All Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               const colors = [
@@ -548,7 +683,7 @@ export default function Index() {
               return (
                 <div
                   key={index}
-                  className="group text-center transform transition-all duration-700 hover:scale-105"
+                  className="group text-center transform transition-all duration-700 hover:scale-105 bg-white rounded-2xl p-6 border-2 border-gray-800 shadow-lg hover:shadow-xl"
                   style={{
                     animation: `fadeInUp 0.8s ease-out ${index * 0.2}s both`,
                   }}
@@ -614,7 +749,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-heading-red mb-2 sm:mb-3 tracking-tight">
-              Choose Your Perfect Snack Box Size
+              Our Snack Box Collection
             </h2>
             <p className="text-base text-snack-dark-blue/70 max-w-xl mx-auto">
               From small treats to large celebrations, we have the perfect size
@@ -638,15 +773,16 @@ export default function Index() {
                   return (
                     <div
                       key={product.id}
-                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 w-[300px] flex-shrink-0 overflow-hidden group hover:scale-[1.03] active:scale-[0.98] relative"
+                      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 w-[300px] flex-shrink-0 overflow-hidden group hover:scale-[1.03] active:scale-[0.98] relative border-2 border-gray-800"
                     >
                       {/* Full Image Fill with White Background */}
                       <div className="relative h-[320px] overflow-hidden bg-white p-4">
                         <img
-                          src={`${product.image}&quality=95`}
-                          alt={`${product.name} - Premium snack variety box with ${product.size} assorted treats perfect for gifting`}
+                          src={`${product.image}&quality=95&format=webp&width=300`}
+                          alt={`Gift A Snack ${product.size} Premium Snack Box with Chips Crackers Cookies and Candy for Gifts and Care Packages`}
                           className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
                           loading="lazy"
+                          decoding="async"
                           width="300"
                           height="320"
                         />
@@ -659,21 +795,21 @@ export default function Index() {
                         {/* Popular Badge */}
                         {index === 1 && (
                           <div className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-xl">
-                            🔥 Popular
+                            �� Popular
                           </div>
                         )}
 
                         {/* Price Strip Overlay at Bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-4 pb-6">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/95 via-white/90 to-transparent p-4 pb-6">
                           <div className="flex items-baseline gap-2 mb-1">
-                            <span className="text-2xl font-black text-white drop-shadow-lg">
+                            <span className="text-2xl font-black text-red-600 drop-shadow-lg">
                               {pricing.salePrice}
                             </span>
-                            <span className="text-lg text-gray-200 line-through">
+                            <span className="text-lg text-gray-500 line-through">
                               {pricing.regularPrice}
                             </span>
                           </div>
-                          <div className="text-sm font-bold text-green-300">
+                          <div className="text-sm font-bold text-green-600">
                             Save $
                             {(
                               parseFloat(
@@ -729,7 +865,7 @@ export default function Index() {
                           className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
                         >
                           <Eye className="w-4 h-4" />
-                          View Details
+                          Quick View
                         </button>
                       </div>
                     </div>
@@ -759,15 +895,16 @@ export default function Index() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:scale-[1.03] cursor-pointer relative"
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:scale-[1.03] cursor-pointer relative border-2 border-gray-800"
                 >
                   {/* Full Image Fill with White Background */}
                   <div className="relative h-[240px] lg:h-[280px] overflow-hidden bg-white p-3 lg:p-4">
                     <img
-                      src={`${product.image}&quality=95`}
-                      alt={`${product.name} - Premium snack variety box with ${product.size} assorted treats perfect for gifting`}
+                      src={`${product.image}&quality=95&format=webp&width=320`}
+                      alt={`Gift A Snack ${product.size} Premium Snack Box with Chips Crackers Cookies and Candy for Gifts and Care Packages`}
                       className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
                       loading="lazy"
+                      decoding="async"
                       width="320"
                       height="280"
                     />
@@ -785,16 +922,16 @@ export default function Index() {
                     )}
 
                     {/* Price Strip Overlay at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-3 lg:p-4 pb-4 lg:pb-5">
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/95 via-white/90 to-transparent p-3 lg:p-4 pb-4 lg:pb-5">
                       <div className="flex items-baseline gap-2 mb-1">
-                        <span className="text-xl lg:text-2xl font-black text-white drop-shadow-lg">
+                        <span className="text-xl lg:text-2xl font-black text-red-600 drop-shadow-lg">
                           {pricing.salePrice}
                         </span>
-                        <span className="text-sm lg:text-base text-gray-200 line-through">
+                        <span className="text-sm lg:text-base text-gray-500 line-through">
                           {pricing.regularPrice}
                         </span>
                       </div>
-                      <div className="text-xs lg:text-sm font-bold text-green-300">
+                      <div className="text-xs lg:text-sm font-bold text-green-600">
                         Save $
                         {(
                           parseFloat(pricing.regularPrice.replace("$", "")) -
@@ -847,7 +984,7 @@ export default function Index() {
                       className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 lg:py-3 rounded-xl text-xs lg:text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
                     >
                       <Eye className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
-                      View Details
+                      Quick View
                     </button>
                   </div>
                 </div>
@@ -860,6 +997,11 @@ export default function Index() {
       {/* Testimonials Section */}
       <TestimonialsCarousel />
       {/* TikTok Videos Section */}
+      <ErrorBoundary fallback={
+        <div className="py-12 text-center bg-gray-100">
+          <p className="text-gray-600">Social media content temporarily unavailable</p>
+        </div>
+      }>
       <section
         className="tiktok-section py-6 sm:py-12 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden"
         style={{
@@ -925,6 +1067,7 @@ export default function Index() {
           </div>
         </div>
       </section>
+      </ErrorBoundary>
 
       {/* Final Call-to-Action Section */}
       <section className="py-6 sm:py-12 px-4 bg-gradient-to-br from-blue-100 via-blue-50 to-white relative overflow-hidden">
@@ -947,10 +1090,14 @@ export default function Index() {
                 Order Now
               </button>
               <button
-                onClick={openFirstProductModal}
+                onClick={() =>
+                  document
+                    .getElementById("testimonials-section")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="border-2 border-logo-green text-logo-green hover:bg-logo-green hover:text-white font-bold px-6 sm:px-8 py-4 sm:py-3 rounded-xl text-base transition-all duration-300 min-h-[56px] sm:min-h-[48px]"
               >
-                View Products
+                Read Reviews
               </button>
             </div>
 
@@ -1048,200 +1195,195 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Enhanced Footer */}
-      <footer className="bg-gradient-to-br from-snack-dark-blue via-gray-900 to-snack-dark-blue text-white py-12 px-4 relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-8 right-16 text-3xl">🍪</div>
-          <div className="absolute bottom-12 left-20 text-2xl">🍫</div>
-          <div className="absolute top-20 left-1/3 text-2xl">🥨</div>
-          <div className="absolute bottom-20 right-1/3 text-3xl">🎁</div>
-        </div>
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          {/* Main footer content */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
-            {/* Brand Section */}
-            <div className="lg:col-span-1">
-              <div className="mb-6">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=200&quality=90"
-                  alt="Gift A Snack Logo"
-                  className="h-12 w-auto mb-4 filter brightness-0 invert"
-                  loading="lazy"
-                />
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Premium snack boxes perfect for gifts, offices, and special
-                  occasions. Spreading joy one box at a time.
-                </p>
-              </div>
+      {/* Clean, Minimal Footer */}
+      <footer className="bg-gradient-to-br from-snack-dark-blue to-gray-900 text-white py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center mb-6">
+            {/* Logo and Description */}
+            <div className="text-center md:text-left">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fcd932fcd18414ba798762d622c2b825c?format=webp&width=240&quality=90"
+                alt="Gift A Snack Premium Snack Box Company Logo - Quality Snack Boxes for Gifts"
+                className="h-20 w-auto mx-auto md:mx-0 mb-3 filter brightness-0 invert"
+                loading="lazy"
+                decoding="async"
+              />
+              <p className="text-gray-300 text-sm">
+                Premium snack boxes perfect for gifts and special occasions.
+              </p>
             </div>
 
             {/* Quick Links */}
-            <div>
-              <h3 className="text-xl font-bold mb-6 text-logo-green">
-                Quick Links
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#products-section"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Products
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Testimonials
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
+            <div className="text-center">
+              <div className="flex flex-wrap justify-center gap-4">
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
+                >
+                  Home
+                </a>
+                <a
+                  href="#products-section"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document
+                      .getElementById("products-section")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
+                >
+                  Products
+                </a>
+                <a
+                  href="#testimonials-section"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document
+                      .getElementById("testimonials-section")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
+                >
+                  Testimonials
+                </a>
+                <a
+                  href="#why-choose-section"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document
+                      .getElementById("why-choose-section")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="text-gray-300 hover:text-logo-green transition-colors duration-300 text-sm font-medium cursor-pointer"
+                >
+                  Why Choose Us
+                </a>
+              </div>
             </div>
 
-            {/* Customer Service */}
-            <div>
-              <h3 className="text-xl font-bold mb-6 text-logo-green">
-                Customer Service
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Shipping Info
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Returns & Exchanges
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    FAQ
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-300 hover:text-logo-green hover:underline hover:underline-offset-4 transition-all duration-300 text-base font-medium"
-                  >
-                    Support
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Order Now */}
-            <div>
-              <h3 className="text-xl font-bold mb-6 text-logo-green">
-                Order Now
-              </h3>
-              <a
-                href={products[0].walmartLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-gradient-to-r from-logo-green to-green-500 hover:from-green-500 hover:to-emerald-500 text-white px-6 py-3 rounded-2xl transition-all duration-300 text-base font-bold shadow-lg hover:shadow-xl transform hover:scale-105 mb-4"
-              >
-                Order from Walmart
-              </a>
-              <p className="text-gray-400 text-sm">
-                Fast shipping • Secure payment • Quality guaranteed
-              </p>
-            </div>
-          </div>
-
-          {/* Social Media Row */}
-          <div className="border-t border-gray-700 pt-8 pb-6">
-            <div className="text-center mb-6">
-              <h4 className="text-lg font-bold mb-4 text-white">Follow Us</h4>
-              <div className="flex justify-center gap-4">
+            {/* Social Media Icons */}
+            <div className="text-center md:text-right">
+              <div className="flex justify-center md:justify-end gap-3">
                 <a
                   href="https://tiktok.com/@nut.cravings"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 bg-gradient-to-br from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-10 h-10 bg-gradient-to-br from-black to-gray-800 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl hover:from-pink-500 hover:to-red-500"
                   aria-label="Follow us on TikTok"
                 >
-                  <span className="font-bold text-sm">TT</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-.88-.05A6.33 6.33 0 0 0 5.16 20.5a6.34 6.34 0 0 0 10.86-4.43V7.83a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.26z" />
+                  </svg>
                 </a>
                 <a
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-10 h-10 bg-gradient-to-br from-black to-gray-800 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl hover:from-pink-500 hover:to-purple-500"
                   aria-label="Follow us on Instagram"
                 >
-                  <span className="font-bold text-sm">IG</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  </svg>
                 </a>
                 <a
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-10 h-10 bg-gradient-to-br from-black to-gray-800 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600"
                   aria-label="Follow us on Facebook"
                 >
-                  <span className="font-bold text-sm">FB</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
                 </a>
                 <a
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-10 h-10 bg-gradient-to-br from-black to-gray-800 rounded-full flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-600"
                   aria-label="Subscribe to our YouTube"
                 >
-                  <span className="font-bold text-sm">YT</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
                 </a>
               </div>
             </div>
           </div>
 
           {/* Copyright */}
-          <div className="border-t border-gray-700 pt-6 text-center">
+          <div className="border-t border-gray-700 pt-4 text-center">
             <p className="text-gray-400 text-sm">
-              &copy; 2025 Gift A Snack. All rights reserved. | Made with ❤️ for
-              snack lovers everywhere
+              © 2025 Gift A Snack. All rights reserved.
             </p>
           </div>
         </div>
       </footer>
 
-      {/* Floating Buy Now Button (Desktop & Mobile) */}
+      {/* Enhanced Floating Buy Now Button (Desktop & Mobile) */}
       {showFloatingButton && (
         <button
           onClick={openFirstProductModal}
-          className="fixed bottom-4 right-4 sm:bottom-4 sm:right-4 bg-logo-green hover:bg-green-500 text-white font-bold px-4 sm:px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-xl shadow-xl z-50 transition-all duration-200 transform hover:scale-105 button-enhanced flex items-center gap-2 min-h-[56px] sm:min-h-[44px] min-w-[56px] sm:min-w-[44px]"
+          aria-label="Open product quick view to buy now"
+          title="Quick order - View our premium snack boxes"
+          className="group fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform hover:scale-110 active:scale-95 flex items-center gap-3 min-h-[68px] sm:min-h-[76px] min-w-[68px] sm:min-w-[160px] animate-bounce-in hover:animate-none focus:ring-4 focus:ring-blue-300 focus:outline-none"
+          style={{
+            filter: "drop-shadow(0 10px 25px rgba(59, 130, 246, 0.4))",
+            animation:
+              "float 3s ease-in-out infinite, pulse-glow 4s ease-in-out infinite",
+          }}
         >
-          <ShoppingCart className="w-5 h-5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline text-sm">Buy Now</span>
-          <span className="sm:hidden text-sm font-semibold">Buy</span>
+          {/* Glowing background effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500 blur-lg"></div>
+
+          {/* Notification badge */}
+          <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg animate-pulse">
+            !
+          </div>
+
+          {/* Button content */}
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="relative">
+              <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
+              {/* Cart animation sparkle */}
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 animate-ping"></div>
+              <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="hidden sm:block text-base font-black leading-tight">
+                Buy Now
+              </span>
+              <span className="hidden sm:block text-xs opacity-90 font-medium">
+                Quick Order
+              </span>
+              <span className="sm:hidden text-base font-black">Buy</span>
+            </div>
+          </div>
+
+          {/* Shine effect on hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-2xl"></div>
         </button>
       )}
 
@@ -1256,9 +1398,9 @@ export default function Index() {
           ></div>
 
           {/* Modal Container */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:p-8">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
             <div
-              className="bg-white w-full h-full lg:w-auto lg:h-auto lg:max-w-6xl lg:max-h-[90vh] shadow-2xl lg:rounded-3xl relative overflow-hidden"
+              className="bg-white w-full h-full sm:w-[90%] sm:h-[85%] sm:max-w-md sm:max-h-[90vh] lg:w-auto lg:h-auto lg:max-w-6xl lg:max-h-[90vh] shadow-2xl rounded-2xl sm:rounded-3xl lg:rounded-3xl relative overflow-hidden"
               style={{
                 animation: "modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                 maxHeight: "calc(100vh - 40px)",
@@ -1268,41 +1410,43 @@ export default function Index() {
               onTouchEnd={handleTouchEnd}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close Button */}
+              {/* Mobile-Optimized Close Button */}
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="absolute top-4 right-4 z-30 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 group"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 w-10 h-10 sm:w-12 sm:h-12 bg-white/95 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 group border border-gray-200"
               >
-                <X className="w-5 h-5 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-gray-900 group-hover:scale-110 transition-all" />
               </button>
 
-              {/* Mobile swipe indicator */}
-              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-2 mb-4 lg:hidden"></div>
+              {/* Enhanced Mobile swipe indicator */}
+              <div className="flex flex-col items-center pt-2 pb-3 lg:hidden">
+                <div className="w-12 h-1 bg-gray-400 rounded-full mb-1"></div>
+                <span className="text-xs text-gray-500 font-medium">Swipe down to close</span>
+              </div>
 
               {/* Desktop Layout: 40% Image | 60% Details */}
               <div className="flex flex-col lg:grid lg:grid-cols-5 h-full">
                 {/* Image Section - 40% on Desktop, Full Width on Mobile */}
                 <div className="lg:col-span-2 relative bg-gradient-to-br from-gray-50 to-gray-100 lg:bg-gray-50">
-                  {/* Mobile: Full Width Image at Top */}
-                  <div className="lg:hidden w-full h-[40vh] relative p-4 flex items-center justify-center">
-                    <div className="relative w-full max-w-sm mx-auto h-full">
+                  {/* Mobile: Properly Sized Image with Margins */}
+                  <div className="lg:hidden w-full relative p-4 sm:p-6 flex items-center justify-center bg-gray-50">
+                    <div className="relative w-full max-w-[280px] sm:max-w-[320px] mx-auto aspect-square">
                       <img
-                        src={`${selectedProduct.image}&quality=90`}
-                        alt={`${selectedProduct.name} - Detailed view`}
-                        className="w-full h-full object-contain rounded-2xl shadow-lg"
+                        src={`${selectedProduct.image}&quality=90&format=webp&width=400`}
+                        alt={`Gift A Snack ${selectedProduct.size} Premium Snack Box with Chips Crackers Cookies and Candy - Detailed Product View`}
+                        className="w-full h-full object-contain rounded-2xl shadow-lg bg-white p-2"
                         loading="lazy"
                         width="400"
                         height="400"
                         style={{
                           animation:
                             "imageZoomIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both",
-                          filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.15))",
+                          filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.1))",
                         }}
                       />
                       {/* Mobile Discount Badge */}
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white px-3 py-1.5 rounded-xl text-sm font-black shadow-lg">
-                        -
-                        {(
+                      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-xl text-sm font-black shadow-lg">
+                        -{(
                           ((parseFloat(
                             calculatePricing(
                               selectedProduct.price,
@@ -1319,8 +1463,7 @@ export default function Index() {
                               ).regularPrice.replace("$", ""),
                             )) *
                           100
-                        ).toFixed(0)}
-                        %
+                        ).toFixed(0)}%
                       </div>
                     </div>
                   </div>
@@ -1329,8 +1472,8 @@ export default function Index() {
                   <div className="hidden lg:flex h-full p-8 items-center justify-center relative">
                     <div className="relative w-full h-full max-w-md mx-auto flex items-center justify-center">
                       <img
-                        src={`${selectedProduct.image}&quality=90`}
-                        alt={`${selectedProduct.name} - Detailed view`}
+                        src={`${selectedProduct.image}&quality=90&format=webp&width=400`}
+                        alt={`Gift A Snack ${selectedProduct.size} Premium Snack Box with Chips Crackers Cookies and Candy - Detailed Product View`}
                         className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                         loading="lazy"
                         width="400"
@@ -1372,49 +1515,49 @@ export default function Index() {
 
                 {/* Details Section - 60% on Desktop */}
                 <div className="lg:col-span-3 flex flex-col h-full relative">
-                  {/* Scrollable Content Area */}
+                  {/* Mobile-Optimized Scrollable Content Area */}
                   <div
-                    className="flex-1 overflow-y-auto p-4 lg:p-8 pb-28 lg:pb-32"
+                    className="flex-1 overflow-y-auto px-4 py-3 sm:px-6 sm:py-4 lg:p-8 pb-24 sm:pb-28 lg:pb-32"
                     style={{
-                      maxHeight: "calc(100vh - 40px)",
+                      maxHeight: "calc(100vh - 200px)",
                     }}
                   >
-                    {/* Title + Rating */}
-                    <div className="mb-6">
-                      <h2 className="text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 leading-tight mb-4">
+                    {/* Mobile-Optimized Title + Rating */}
+                    <div className="mb-4 sm:mb-6">
+                      <h2 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 leading-tight mb-3 sm:mb-4">
                         {selectedProduct.shortName || selectedProduct.name}
                       </h2>
 
-                      {/* Rating with gold stars */}
+                      {/* Mobile-Optimized Rating with gold stars */}
                       {selectedProduct.rating && (
-                        <div className="flex items-center gap-2 mb-4">
+                        <div className="flex items-center gap-2 mb-3 sm:mb-4">
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-5 h-5 ${i < selectedProduct.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                                className={`w-4 h-4 sm:w-5 sm:h-5 ${i < selectedProduct.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
                               />
                             ))}
                           </div>
-                          <span className="text-sm text-gray-600 font-medium">
+                          <span className="text-sm sm:text-base text-gray-600 font-medium">
                             ({selectedProduct.reviewCount} reviews)
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Price Section */}
-                    <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-100">
-                      <div className="flex items-baseline gap-3 mb-3">
-                        <span className="text-4xl lg:text-5xl font-black text-red-500">
+                    {/* Mobile-Optimized Price Section */}
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-100">
+                      <div className="flex items-baseline gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-red-600">
                           {calculatePricing(selectedProduct.price).salePrice}
                         </span>
-                        <span className="text-2xl lg:text-3xl text-gray-400 line-through">
+                        <span className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-gray-500 line-through">
                           {calculatePricing(selectedProduct.price).regularPrice}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span className="bg-green-100 text-green-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-bold inline-block w-fit">
                           Save $
                           {(
                             parseFloat(
@@ -1430,10 +1573,10 @@ export default function Index() {
                           ).toFixed(2)}
                         </span>
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">🍪</span>
-                          <span className="text-lg">🍫</span>
-                          <span className="text-lg">🥨</span>
-                          <span className="text-sm text-gray-500 ml-2 font-medium">
+                          <span className="text-base sm:text-lg">🍪</span>
+                          <span className="text-base sm:text-lg">🍫</span>
+                          <span className="text-base sm:text-lg">🥨</span>
+                          <span className="text-sm sm:text-base text-gray-600 ml-2 font-medium">
                             {selectedProduct.size}
                           </span>
                         </div>
@@ -1526,42 +1669,42 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* Sticky Buy Button - Inside Details Column (Desktop) / Fixed at Bottom (Mobile) */}
-                  <div className="lg:sticky lg:bottom-0 fixed bottom-0 left-0 right-0 lg:relative bg-white border-t border-gray-200 p-4 lg:p-6 shadow-lg lg:shadow-none lg:border-t lg:rounded-b-3xl z-40">
+                  {/* Mobile-Optimized Sticky Buy Button */}
+                  <div className="lg:sticky lg:bottom-0 sticky bottom-0 sm:relative bg-white border-t border-gray-200 p-3 sm:p-4 lg:p-6 shadow-lg lg:shadow-none lg:border-t lg:rounded-b-3xl z-40 rounded-b-2xl sm:rounded-b-3xl">
                     <a
                       href={selectedProduct.walmartLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 lg:py-5 text-center rounded-2xl text-lg lg:text-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+                      className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 lg:py-5 text-center rounded-xl sm:rounded-2xl text-base sm:text-lg lg:text-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 sm:gap-3"
                     >
-                      <ShoppingCart className="w-6 h-6" />
+                      <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
                       <div className="flex flex-col">
-                        <span className="font-black">BUY NOW ON</span>
-                        <span className="font-black text-yellow-300">
+                        <span className="font-black text-sm sm:text-base">BUY NOW ON</span>
+                        <span className="font-black text-yellow-300 text-sm sm:text-base">
                           WALMART
                         </span>
                       </div>
-                      <div className="bg-yellow-400 text-blue-800 px-3 py-1.5 rounded-full text-base font-black">
+                      <div className="bg-yellow-400 text-blue-800 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-sm sm:text-base font-black">
                         {calculatePricing(selectedProduct.price).salePrice}
                       </div>
                     </a>
 
-                    {/* Trust indicators */}
-                    <div className="flex items-center justify-center gap-4 lg:gap-6 mt-3 text-xs lg:text-sm text-gray-600">
+                    {/* Mobile-Optimized Trust indicators */}
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 lg:gap-6 mt-2 sm:mt-3 text-xs sm:text-sm lg:text-sm text-gray-600">
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         <span className="hidden sm:inline">Fast Shipping</span>
-                        <span className="sm:hidden">Shipping</span>
+                        <span className="sm:hidden text-xs">Shipping</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         <span className="hidden sm:inline">Secure Payment</span>
-                        <span className="sm:hidden">Secure</span>
+                        <span className="sm:hidden text-xs">Secure</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                        <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         <span className="hidden sm:inline">Easy Returns</span>
-                        <span className="sm:hidden">Returns</span>
+                        <span className="sm:hidden text-xs">Returns</span>
                       </div>
                     </div>
                   </div>
